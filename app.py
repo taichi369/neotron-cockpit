@@ -3,22 +3,22 @@ import pandas as pd
 import numpy as np
 
 # ページ設定
-st.set_page_config(page_title="NeoTRON_02: Active Cockpit", page_icon="⚡")
+st.set_page_config(page_title="NeoTRON_02: 戦術コックピット", page_icon="⚡")
 
-# ▼▼▼ 修正ポイント：画面上部に強制的に余白を作る ▼▼▼
+# ▼▼▼ 修正ポイント：画面上部に余白を作る（スマホのタイトル隠れ防止） ▼▼▼
 st.markdown("""
     <style>
         .block-container {
-            padding-top: 4rem;  /* 上の隙間を大きく広げる */
+            padding-top: 3rem;
         }
     </style>
 """, unsafe_allow_html=True)
 # ▲▲▲ 修正ここまで ▲▲▲
 
-st.title("⚡ NeoTRON_02: Active Cockpit")
+st.title("⚡ NeoTRON_02: 戦術コックピット")
 
 # サイドバー（入力エリア）
-st.sidebar.header("Input Data")
+st.sidebar.header("データ入力")
 bpm = st.sidebar.slider("現在の心拍数 (BPM)", min_value=40, max_value=180, value=65)
 mood = st.sidebar.select_slider("メンタルコンディション", options=["絶不調", "低調", "通常", "好調", "絶好調"], value="通常")
 
@@ -26,10 +26,10 @@ mood = st.sidebar.select_slider("メンタルコンディション", options=["�
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric(label="Heart Rate (BPM)", value=bpm, delta=bpm - 65)
+    st.metric(label="心拍数 (BPM)", value=bpm, delta=bpm - 65)
 
 with col2:
-    st.metric(label="Condition", value=mood)
+    st.metric(label="状態", value=mood)
 
 st.divider()
 
@@ -47,7 +47,7 @@ else:
 st.info(f"**推奨アクション：** {action}")
 
 # グラフ（ダミーデータの推移イメージ）
-st.subheader("Vital Trend (Simulation)")
+st.subheader("バイタル推移 (シミュレーション)")
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
