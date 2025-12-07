@@ -87,4 +87,6 @@ st.divider()
 st.subheader("バイタル")
 
 chart_data = pd.DataFrame(
-    np.random.randn(20
+    np.random.randn(20, 1) * 10 + bpm,
+    columns=['BPM'])
+st.line_chart(chart_data)
