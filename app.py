@@ -80,8 +80,6 @@ else:
 
 st.info(f"**助言：** {action}")
 
-st.divider()
-
 # グラフセクション
 st.subheader("バイタル")
 
@@ -89,4 +87,5 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
 st.line_chart(chart_data)
+
 
