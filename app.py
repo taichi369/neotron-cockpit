@@ -5,46 +5,48 @@ import numpy as np
 # ページ設定
 st.set_page_config(page_title="体調と助言", page_icon="⚡")
 
-# ▼▼▼ デザイン・級数統一ルール（CSS） ▼▼▼
+# ▼▼▼ デザイン・級数 厳格統一ルール（CSS） ▼▼▼
 st.markdown("""
     <style>
-        /* 1. フォントの統一（日本語・数字を同じ書体で表示） */
+        /* 0. 日本語フォント指定 */
         html, body, [class*="css"] {
             font-family: "Hiragino Sans", "Meiryo", "Yu Gothic", sans-serif;
         }
 
-        /* 2. 上部余白（スマホ対策） */
+        /* 1. スマホ用上部余白 */
         .block-container {
             padding-top: 3rem;
         }
 
-        /* 3. 【見出し】の級数統一 */
-        /* 「心拍数」「状態」のラベル(st.metric) と 「バイタル」の見出し(h3) を同じにする */
-        [data-testid="stMetricLabel"], [data-testid="stMarkdownContainer"] h3 {
-            font-size: 18px !important;     /* 見出しは18pxに統一 */
-            color: #555555 !important;      /* 色もグレーに統一 */
-            font-weight: 600 !important;    /* 太さも統一 */
-            margin-bottom: 0px !important;  /* 下の余白を詰める */
+        /* === 統一ルール：項目ラベル（中） === */
+        /* 「心拍数」「状態」のラベルを強制上書き */
+        [data-testid="stMetricLabel"] {
+            font-size: 16px !important;      /* 級数：16pxに固定 */
+            color: #666666 !important;       /* 色：濃いグレーに固定 */
+            font-weight: 600 !important;     /* 太さ：太字に固定 */
+        }
+        
+        /* 「バイタル」など、手動で作るラベル用のクラス定義 */
+        .custom-label {
+            font-size: 16px !important;      /* MetricLabelと完全に同じ設定 */
+            color: #666666 !important;
+            font-weight: 600 !important;
+            margin-bottom: 0px !important;
         }
 
-        /* 4. 【値】の級数統一 */
-        /* 数字(65) も 日本語(通常) も同じ大きさに強制固定 */
+        /* === 統一ルール：データ値（大） === */
+        /* 「65」「通常」の文字を強制上書き */
         [data-testid="stMetricValue"] div {
-            font-size: 36px !important;     /* 値は36pxに統一 */
+            font-size: 32px !important;      /* 級数：32pxに固定 */
+            color: #333333 !important;       /* 色：黒に固定 */
             font-weight: 700 !important;
-            line-height: 1.2 !important;    /* 行間を整える */
         }
-        
-        /* 助言ボックスの文字サイズ調整 */
-        .stAlert {
-            font-size: 16px !important;
-        }
-        
+
     </style>
 """, unsafe_allow_html=True)
 # ▲▲▲ 設定ここまで ▲▲▲
 
-# タイトル（ここはアプリ名なので最大のまま）
+# タイトル（特大）
 st.title("⚡ 体調と助言")
 
 # サイドバー
@@ -58,16 +60,16 @@ st.divider()
 col1, col2 = st.columns(2)
 
 with col1:
-    # ラベル「心拍数」 → CSSで18pxになります
-    # 値「65」 → CSSで36pxになります
+    # ラベル「心拍数」 -> CSSで16pxグレーになります
+    # 値「65」 -> CSSで32px黒になります
     st.metric(label="心拍数 (BPM)", value=bpm, delta=bpm - 65)
 
 with col2:
-    # ラベル「状態」 → CSSで18pxになります
-    # 値「通常」 → CSSで36pxになります
+    # ラベル「状態」 -> CSSで16pxグレーになります
+    # 値「通常」 -> CSSで32px黒になります
     st.metric(label="状態", value=mood)
 
-# 状況判定と助言
+# 状況判定
 if bpm > 100:
     st.error("警告：心拍数上昇")
     action = "深呼吸・休憩・水分補給をして下さい。"
@@ -80,12 +82,13 @@ else:
 
 st.info(f"**助言：** {action}")
 
+st.divider()
+
 # グラフセクション
-st.subheader("バイタル")
+# 【修正】st.subheaderを使わず、metricラベルと同じ見た目のHTMLを使用
+st.markdown('<p class="custom-label">バイタル</p>', unsafe_allow_html=True)
 
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
 st.line_chart(chart_data)
-
-
