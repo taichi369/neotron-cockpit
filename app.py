@@ -36,7 +36,7 @@ elif bpm < 50:
 else:
     status_msg = "安定しています。"
     # 修正：余計な指示を削除し、一言で済ませる
-    action = "特に問題はありません。"
+    action = "問題はありません。"
     alert_type = "success"
 
 # 1. 体調
@@ -58,4 +58,5 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['推移'])
 st.line_chart(chart_data, height=200)
+
 
