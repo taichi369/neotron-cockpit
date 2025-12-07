@@ -82,8 +82,6 @@ else:
 
 st.info(f"**助言：** {action}")
 
-st.divider()
-
 # グラフセクション
 # 【修正】st.subheaderを使わず、metricラベルと同じ見た目のHTMLを使用
 st.markdown('<p class="custom-label">バイタル</p>', unsafe_allow_html=True)
@@ -92,3 +90,4 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
 st.line_chart(chart_data)
+
