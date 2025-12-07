@@ -54,8 +54,6 @@ st.sidebar.header("データ入力")
 bpm = st.sidebar.slider("現在の心拍数 (BPM)", min_value=40, max_value=180, value=65)
 mood = st.sidebar.select_slider("メンタルコンディション", options=["絶不調", "低調", "通常", "好調", "絶好調"], value="通常")
 
-st.divider()
-
 # メイン画面：指標表示
 col1, col2 = st.columns(2)
 
@@ -90,4 +88,5 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
 st.line_chart(chart_data)
+
 
