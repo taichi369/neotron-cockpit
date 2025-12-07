@@ -5,50 +5,67 @@ import numpy as np
 # ページ設定
 st.set_page_config(page_title="NeoTRON", page_icon="⚡")
 
-# --- 【重要】CSSでデザインを強制変更（余白削除・文字サイズ固定） ---
+# --- CSSで「文字サイズの統一」と「タイトルの表示」を強制設定 ---
 st.markdown("""
     <style>
-        /* 1. 全体のフォントサイズを12ptに固定 */
-        html, body, [class*="css"] {
-            font-size: 16px !important; /* Web上の16px ≒ 約12pt */
-        }
-        /* 2. タイトルのフォントサイズを14pt強（18px）に固定・余白削除 */
-        h1, h2, h3 {
-            font-size: 19px !important; /* 約14pt */
-            font-weight: bold !important;
-            padding: 0 !important;
-            margin-bottom: 10px !important;
-        }
-        /* 3. 画面上部の巨大な余白を削除 */
+        /* 1. 画面上部の余白を確保（タイトルが見えるように調整） */
         .block-container {
-            padding-top: 1rem !important;
+            padding-top: 2rem !important; /* 余裕を持たせる */
             padding-bottom: 1rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
         }
-        /* 4. 各要素の隙間を詰める */
+
+        /* 2. 基本の文字サイズを12pt（16px）に統一 */
+        html, body, p, .stMarkdown, .stRadio label {
+            font-size: 16px !important;
+        }
+
+        /* 3. タイトルを14pt（19px）にし、余計な余白を消す */
+        h1 {
+            font-size: 19px !important;
+            font-weight: bold !important;
+            margin-bottom: 15px !important;
+            padding-top: 0 !important;
+        }
+
+        /* 4. 【重要】「心拍数」と「気分」の文字サイズを強制的に揃える */
+        /* 数値も文字も、両方30px（かなり大きく）で統一 */
+        [data-testid="stMetricValue"] {
+            font-size: 30px !important;
+            font-weight: bold !important;
+            line-height: 1.2 !important;
+        }
+        
+        /* ラベル（項目名）は小さく */
+        [data-testid="stMetricLabel"] {
+            font-size: 14px !important;
+        }
+
+        /* 5. その他の隙間調整 */
         .stAlert { padding: 0.5rem !important; }
-        .stMetric { margin-bottom: 0px !important; }
         hr { margin: 0.5rem 0 !important; }
+        .stButton button { width: 100%; }
     </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 
-# タイトル（コンパクトに）
-st.markdown("### ⚡ 体調と助言")
+# タイトル（h1タグとして出力）
+st.title("⚡ 体調と助言")
 
-# サイドバー（入力）
+# サイドバー
 st.sidebar.header("▼ 入力")
 bpm = st.sidebar.slider("心拍数", 40, 180, 65)
 mood = st.sidebar.select_slider("気分", ["絶不調", "低調", "普通", "好調", "絶好調"], value="普通")
 
-# 数値表示（2列でコンパクトに）
+# メイン表示（文字サイズはCSSで統一済み）
 col1, col2 = st.columns(2)
 with col1:
     st.metric("心拍数", f"{bpm}", delta=bpm-65)
 with col2:
     st.metric("気分", mood)
 
-# 区切り線
 st.divider()
 
 # 判定ロジック
@@ -65,7 +82,7 @@ else:
     act = "問題はありません。"
     alert_type = "success"
 
-# 状態と助言（縦並びでスペース節約）
+# 状態と助言
 if alert_type == "error":
     st.error(f"**状態：** {msg}")
 elif alert_type == "warning":
@@ -75,7 +92,7 @@ else:
 
 st.info(f"**助言：** {act}")
 
-# グラフ（高さを半分以下の150pxにして一画面に収める）
+# グラフ（一画面に収まるよう高さを抑制）
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['推移'])
