@@ -83,10 +83,10 @@ st.info(f"**助言：** {action}")
 st.divider()
 
 # グラフセクション
-# ここでsubheaderを使いますが、CSSでmetricラベルと同じ見た目(18px)に変えています
 st.subheader("バイタル")
 
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
 st.line_chart(chart_data)
+
