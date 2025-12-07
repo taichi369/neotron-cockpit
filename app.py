@@ -1,75 +1,44 @@
 import streamlit as st
-import json
-import time
-import os
+import pandas as pd
+import numpy as np
 
-# --- 設定 ---
-st.set_page_config(
-    page_title="NeoTRON_01 Cockpit",
-    page_icon="⚡",
-    layout="wide"
-)
+# ページ設定
+st.set_page_config(page_title="NeoTRON_02: Active Cockpit", page_icon="⚡")
 
-STATUS_FILE = "system_status.json"
+st.title("⚡ NeoTRON_02: Active Cockpit")
 
-# --- 関数: 記憶を読み取る ---
-def load_status():
-    if not os.path.exists(STATUS_FILE):
-        return None, 0, 0
-    try:
-        with open(STATUS_FILE, "r", encoding='utf-8') as f:
-            data = json.load(f)
-            return data.get("mode", "NORMAL"), data.get("heart_rate", 0), data.get("updated", 0)
-    except:
-        return None, 0, 0
+# サイドバー（入力エリア）
+st.sidebar.header("Input Data")
+bpm = st.sidebar.slider("現在の心拍数 (BPM)", min_value=40, max_value=180, value=65)
+mood = st.sidebar.select_slider("メンタルコンディション", options=["絶不調", "低調", "通常", "好調", "絶好調"], value="通常")
 
-# --- メイン画面構築 ---
-st.title("⚡ NeoTRON_01: Tactical Cockpit")
+# メイン画面（表示エリア）
+col1, col2 = st.columns(2)
 
-# プレースホルダー（中身が入れ替わる箱）を作る
-status_container = st.empty()
+with col1:
+    st.metric(label="Heart Rate (BPM)", value=bpm, delta=bpm - 65)
 
-# --- リアルタイム表示ループ ---
-# Streamlitは通常、上から下へ一度だけ実行されるが、
-# ここでは簡易的に「再実行ボタン」または自動リロードのような挙動を擬似的に作る
-# ※本来は while True は非推奨だが、ローカル動作確認のためシンプルに実装します
+with col2:
+    st.metric(label="Condition", value=mood)
 
-# 最新データを取得
-mode, hr, updated = load_status()
+st.divider()
 
-with status_container.container():
-    # 1. ヘッダー情報
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric(label="Heart Rate (BPM)", value=hr, delta=None)
-    with col2:
-        st.caption(f"Last Update: {time.ctime(updated)}")
+# 状況判定ロジック
+if bpm > 100:
+    st.error("🚨 警告：心拍数上昇。深呼吸を実行せよ。")
+    action = "深呼吸・休憩・水分補給"
+elif bpm < 50:
+    st.warning("⚠️ 注意：覚醒レベル低下。軽く運動せよ。")
+    action = "ストレッチ・散歩・カフェイン摂取"
+else:
+    st.success("✅ 状態：安定。論理的思考が可能。")
+    action = "3S（整理・整頓・清掃）・重要課題の処理"
 
-    st.divider()
+st.info(f"**推奨アクション：** {action}")
 
-    # 2. モード別表示
-    if mode == "COMBAT":
-        # 緊急モード（赤）
-        st.error("🔥 COMBAT MODE (戦闘態勢)")
-        st.markdown("""
-        ### ⚠️ 警告：心拍数上昇
-        * **判断:** 直感優先。論理は後回し。
-        * **行動:** 即断即決。結論から話せ。
-        """)
-    elif mode == "NORMAL":
-        # 通常モード（緑）
-        st.success("🍀 NORMAL MODE (平時)")
-        st.markdown("""
-        ### ✅ 状態：安定
-        * **判断:** 論理的思考が可能。
-        * **行動:** 3S（整理・整頓・清掃）を実行せよ。
-        """)
-    else:
-        # データなし（グレー）
-        st.warning("📡 WAITING FOR SIGNAL... (信号待機中)")
-
-    st.divider()
-    
-    # 自動更新のためのボタン（押すと最新になる）
-    if st.button('🔄 画面更新 (Refresh)'):
-        st.rerun()
+# グラフ（ダミーデータの推移イメージ）
+st.subheader("Vital Trend (Simulation)")
+chart_data = pd.DataFrame(
+    np.random.randn(20, 1) * 10 + bpm,
+    columns=['BPM'])
+st.line_chart(chart_data)
