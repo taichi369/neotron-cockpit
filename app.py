@@ -33,9 +33,9 @@ st.markdown("""
             font-weight: 900 !important;
         }
 
-        /* 右側の列（気分）の文字を「24px（控えめ）」にする */
+        /* 右側の列（気分）の文字を「16px（控えめ）」にする */
         div[data-testid="column"]:nth-of-type(2) [data-testid="stMetricValue"] {
-            font-size: 24px !important;
+            font-size: px !important;
             font-weight: bold !important;
             line-height: 2.0 !important; /* 高さ位置を合わせるための調整 */
         }
@@ -104,3 +104,4 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['推移'])
 st.line_chart(chart_data, height=150)
+
