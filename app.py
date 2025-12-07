@@ -5,7 +5,7 @@ import numpy as np
 # ページ設定
 st.set_page_config(page_title="NeoTRON", page_icon="⚡")
 
-# --- 【デザインシステム：文字サイズの階層化】 ---
+# --- 【デザインシステム：文字サイズの調整】 ---
 st.markdown("""
     <style>
         /* 基本設定 */
@@ -13,46 +13,45 @@ st.markdown("""
             font-size: 1.0rem !important;
         }
 
-        /* --- ランク1：タイトル（画面内で一番大きい） --- */
-        /* 約56px：圧倒的に大きくする */
+        /* --- ランク1：タイトル（修正：スマホで見やすいサイズへ縮小） --- */
+        /* 3.5rem -> 2.2rem に変更 */
         h1 {
-            font-size: 3.5rem !important; 
+            font-size: 2.2rem !important;
             font-weight: 900 !important;
-            line-height: 1.1 !important;
+            line-height: 1.2 !important;
             padding: 0 !important;
             margin-bottom: 0.5rem !important;
         }
 
-        /* --- ランク2：数値と気分の文字（タイトルの次に大きい） --- */
-        /* 約40px：タイトルよりは小さいが、十分に目立つ */
+        /* --- ランク2：数値と気分の文字 --- */
         [data-testid="stMetricValue"] {
             font-size: 2.5rem !important;
             font-weight: 700 !important;
             line-height: 1.2 !important;
         }
 
-        /* ランク3：項目ラベル（控えめに） */
+        /* ランク3：項目ラベル */
         [data-testid="stMetricLabel"] {
             font-size: 0.875rem !important;
             color: #555 !important;
         }
 
-        /* レイアウト調整：上部余白 */
+        /* レイアウト調整 */
         .block-container {
-            padding-top: 3rem !important;
+            padding-top: 2rem !important; /* 上の余白も少し詰める */
             padding-bottom: 1rem !important;
         }
-        
+
         /* 余分な隙間の削除 */
         hr { margin: 1rem 0 !important; }
         .stAlert { padding: 0.5rem 1rem !important; }
-        
+
     </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 
-# タイトル（ランク1）：ここで確実に「助言」と表示
+# タイトル
 st.title("⚡ 体調と助言")
 
 # 区切り線
@@ -63,7 +62,7 @@ st.sidebar.header("▼ 入力")
 bpm = st.sidebar.slider("心拍数", 40, 180, 65)
 mood = st.sidebar.select_slider("気分", ["絶不調", "低調", "普通", "好調", "絶好調"], value="普通")
 
-# メイン表示（ランク2）：数値と文字の大きさは同じ
+# メイン表示
 col1, col2 = st.columns(2)
 with col1:
     st.metric("心拍数", f"{bpm}", delta=bpm-65)
@@ -92,7 +91,7 @@ elif alert_type == "warning":
 else:
     st.success(f"**状態：** {msg}")
 
-# 助言の表示（ここも「助言」に統一）
+# 助言の表示
 st.info(f"**助言：** {act}")
 
 # グラフ
