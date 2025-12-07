@@ -2,15 +2,15 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# タブ名（ブラウザ用）
+# タブ名
 st.set_page_config(page_title="NeoTRON", page_icon="⚡")
 
-# タイトル：1行で収まる最短の表現
+# タイトル
 st.title("⚡ 体調と助言")
 
 st.divider()
 
-# サイドバー：入力
+# サイドバー
 st.sidebar.header("▼ 入力")
 bpm = st.sidebar.slider("心拍数", min_value=40, max_value=180, value=65)
 mood = st.sidebar.select_slider("気分", options=["絶不調", "低調", "普通", "好調", "絶好調"], value="普通")
@@ -27,15 +27,16 @@ st.divider()
 # 判定ロジック
 if bpm > 100:
     status_msg = "負荷過多。冷静さを欠く恐れあり。"
-    action = "深呼吸・休憩・水分補給"
+    action = "深呼吸・休憩・水分補給を実行せよ"
     alert_type = "error"
 elif bpm < 50:
     status_msg = "活動低下。集中力低下の恐れあり。"
-    action = "散歩・ストレッチ・軽い運動"
+    action = "散歩・ストレッチ・軽い運動を実行せよ"
     alert_type = "warning"
 else:
     status_msg = "安定。最適な状態。"
-    action = "3S（整理・整頓・清掃）と重要課題の処理"
+    # 修正：余計な指示を削除し、一言で済ませる
+    action = "特に問題なし。"
     alert_type = "success"
 
 # 1. 体調
