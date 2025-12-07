@@ -2,43 +2,60 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# ページ設定
-st.set_page_config(page_title="NeoTRON_02: Active Cockpit", page_icon="⚡")
+# ブラウザのタブ名にはシステム名を残す（画面には出ない）
+st.set_page_config(page_title="NeoTRON システム", page_icon="⚡")
 
-st.title("⚡ NeoTRON_02: Active Cockpit")
-
-# サイドバー（入力エリア）
-st.sidebar.header("Input Data")
-bpm = st.sidebar.slider("現在の心拍数 (BPM)", min_value=40, max_value=180, value=65)
-mood = st.sidebar.select_slider("メンタルコンディション", options=["絶不調", "低調", "通常", "好調", "絶好調"], value="通常")
-
-# メイン画面（表示エリア）
-col1, col2 = st.columns(2)
-
-with col1:
-    st.metric(label="Heart Rate (BPM)", value=bpm, delta=bpm - 65)
-
-with col2:
-    st.metric(label="Condition", value=mood)
+# タイトル：マークと、要点のみ
+st.title("⚡ 今の体調と、あなたへの助言")
 
 st.divider()
 
-# 状況判定ロジック
+# サイドバー：極限までシンプルに
+st.sidebar.header("▼ 入力")
+bpm = st.sidebar.slider("心拍数", min_value=40, max_value=180, value=65)
+mood = st.sidebar.select_slider("気分", options=["絶不調", "低調", "普通", "好調", "絶好調"], value="普通")
+
+# 数値表示
+col1, col2 = st.columns(2)
+with col1:
+    st.metric(label="心拍数", value=f"{bpm}", delta=bpm - 65)
+with col2:
+    st.metric(label="気分", value=mood)
+
+st.divider()
+
+# 判定ロジック（裏側の仕組みはそのまま）
 if bpm > 100:
-    st.error("🚨 警告：心拍数上昇。深呼吸を実行せよ。")
-    action = "深呼吸・休憩・水分補給"
+    status_msg = "負荷過多。冷静さを欠いている可能性あり。"
+    action = "深呼吸し、一度休憩せよ（水分補給）"
+    alert_type = "error"
 elif bpm < 50:
-    st.warning("⚠️ 注意：覚醒レベル低下。軽く運動せよ。")
-    action = "ストレッチ・散歩・カフェイン摂取"
+    status_msg = "活動低下。集中力が落ちている可能性あり。"
+    action = "軽く体を動かし、覚醒させよ（散歩・ストレッチ）"
+    alert_type = "warning"
 else:
-    st.success("✅ 状態：安定。論理的思考が可能。")
-    action = "3S（整理・整頓・清掃）・重要課題の処理"
+    status_msg = "安定。心身ともに最適な状態。"
+    action = "「3S（整理・整頓・清掃）」を行い、重要課題に着手せよ"
+    alert_type = "success"
 
-st.info(f"**推奨アクション：** {action}")
+# --- ここが要点 ---
 
-# グラフ（ダミーデータの推移イメージ）
-st.subheader("Vital Trend (Simulation)")
+# 1. 体調の表示
+st.subheader("▼ 今の体調")
+if alert_type == "error":
+    st.error(status_msg)
+elif alert_type == "warning":
+    st.warning(status_msg)
+else:
+    st.success(status_msg)
+
+# 2. 助言の表示
+st.subheader("▼ あなたへの助言")
+st.info(f"### {action}")
+
+# グラフ（補足情報として下に置く）
+st.divider()
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
-    columns=['BPM'])
-st.line_chart(chart_data)
+    columns=['推移'])
+st.line_chart(chart_data, height=200)
