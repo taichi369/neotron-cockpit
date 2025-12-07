@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 
 # ページ設定
-st.set_page_config(page_title="NeoTRON_02: 戦術コックピット", page_icon="⚡")
+st.set_page_config(page_title="体調と助言", page_icon="⚡")
 
-# ▼▼▼ 修正ポイント：画面上部に余白を作る（スマホのタイトル隠れ防止） ▼▼▼
+# ▼▼▼ スマホ用レイアウト調整（タイトル隠れ防止） ▼▼▼
 st.markdown("""
     <style>
         .block-container {
@@ -13,9 +13,10 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-# ▲▲▲ 修正ここまで ▲▲▲
+# ▲▲▲ 調整ここまで ▲▲▲
 
-st.title("⚡ NeoTRON_02: 戦術コックピット")
+# タイトル（ご指定の名前）
+st.title("⚡ 体調と助言")
 
 # サイドバー（入力エリア）
 st.sidebar.header("データ入力")
@@ -44,10 +45,10 @@ else:
     st.success("✅ 状態：安定。論理的思考が可能。")
     action = "3S（整理・整頓・清掃）・重要課題の処理"
 
-st.info(f"**推奨アクション：** {action}")
+st.info(f"**助言：** {action}")
 
-# グラフ（ダミーデータの推移イメージ）
-st.subheader("バイタル推移 (シミュレーション)")
+# グラフ（シミュレーション）
+st.subheader("バイタル推移")
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
