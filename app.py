@@ -2,44 +2,47 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# ページ基本設定
+# ページ設定
 st.set_page_config(page_title="NeoTRON", page_icon="⚡")
 
-# --- 【デザインシステム定義】 ---
-# ここで「規定値」を一括管理します。
-# 1rem = ブラウザの標準文字サイズ（通常16px）
+# --- 【デザインシステム：文字サイズの階層化】 ---
 st.markdown("""
     <style>
-        /* --- 1. 基準となる規定値のセット --- */
-        
-        /* 全体のベースライン */
+        /* 基本設定 */
         html, body, p, .stMarkdown {
-            font-size: 1.0rem !important; /* 規定値：1倍 */
+            font-size: 1.0rem !important;
         }
 
-        /* レベル1：タイトル・重要数値（2倍サイズで統一） */
-        h1, [data-testid="stMetricValue"] {
-            font-size: 2.5rem !important; /* 規定値：2.5倍 */
-            font-weight: 700 !important;  /* 太さ：Bold */
-            line-height: 1.2 !important;
+        /* --- ランク1：タイトル（画面内で一番大きい） --- */
+        /* 約56px：圧倒的に大きくする */
+        h1 {
+            font-size: 3.5rem !important; 
+            font-weight: 900 !important;
+            line-height: 1.1 !important;
             padding: 0 !important;
+            margin-bottom: 0.5rem !important;
         }
 
-        /* レベル2：項目ラベル（標準より少し小さく、色は薄く） */
+        /* --- ランク2：数値と気分の文字（タイトルの次に大きい） --- */
+        /* 約40px：タイトルよりは小さいが、十分に目立つ */
+        [data-testid="stMetricValue"] {
+            font-size: 2.5rem !important;
+            font-weight: 700 !important;
+            line-height: 1.2 !important;
+        }
+
+        /* ランク3：項目ラベル（控えめに） */
         [data-testid="stMetricLabel"] {
-            font-size: 0.875rem !important; /* 規定値：0.875倍 */
-            font-weight: 400 !important;
+            font-size: 0.875rem !important;
             color: #555 !important;
         }
 
-        /* --- 2. レイアウトの規定 --- */
-        
-        /* 上部余白のルール化（タイトル用スペース） */
+        /* レイアウト調整：上部余白 */
         .block-container {
             padding-top: 3rem !important;
             padding-bottom: 1rem !important;
         }
-
+        
         /* 余分な隙間の削除 */
         hr { margin: 1rem 0 !important; }
         .stAlert { padding: 0.5rem 1rem !important; }
@@ -49,18 +52,18 @@ st.markdown("""
 
 # ---------------------------------------------------------
 
-# タイトル（レベル1が適用される）
+# タイトル（ランク1）：ここで確実に「助言」と表示
 st.title("⚡ 体調と助言")
 
 # 区切り線
 st.divider()
 
-# サイドバー：入力エリア
+# サイドバー
 st.sidebar.header("▼ 入力")
 bpm = st.sidebar.slider("心拍数", 40, 180, 65)
 mood = st.sidebar.select_slider("気分", ["絶不調", "低調", "普通", "好調", "絶好調"], value="普通")
 
-# メイン表示：重要数値（CSSにより、レベル1の大きさに自動統一）
+# メイン表示（ランク2）：数値と文字の大きさは同じ
 col1, col2 = st.columns(2)
 with col1:
     st.metric("心拍数", f"{bpm}", delta=bpm-65)
@@ -89,10 +92,10 @@ elif alert_type == "warning":
 else:
     st.success(f"**状態：** {msg}")
 
-# 助言の表示
+# 助言の表示（ここも「助言」に統一）
 st.info(f"**助言：** {act}")
 
-# グラフ（下部に配置）
+# グラフ
 st.divider()
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
