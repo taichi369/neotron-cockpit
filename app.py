@@ -26,7 +26,7 @@ st.divider()
 
 # 判定ロジック
 if bpm > 100:
-    status_msg = "負荷過多。冷静を欠く恐れがあます。"
+    status_msg = "負荷過多。冷静を欠く恐れがあります。"
     action = "深呼吸・休憩・水分補給をお勧めします。"
     alert_type = "error"
 elif bpm < 50:
@@ -58,5 +58,3 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['推移'])
 st.line_chart(chart_data, height=200)
-
-
