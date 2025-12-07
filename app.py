@@ -5,10 +5,10 @@ import numpy as np
 # ページ設定
 st.set_page_config(page_title="NeoTRON", page_icon="⚡")
 
-# --- CSS設定（デザインの強制修正） ---
+# --- CSS設定 ---
 st.markdown("""
     <style>
-        /* 1. 画面上部の余白設定（タイトルが隠れないギリギリの高さ 4rem に調整） */
+        /* 1. 上部余白設定（タイトル用） */
         .block-container {
             padding-top: 4rem !important;
             padding-bottom: 1rem !important;
@@ -16,37 +16,37 @@ st.markdown("""
             padding-right: 1rem !important;
         }
 
-        /* 2. タイトル（h1）を「一番大きく」設定（42px） */
+        /* 2. タイトル（最大サイズ 42px） */
         h1 {
             font-size: 42px !important;
-            font-weight: 900 !important; /* 極太 */
+            font-weight: 900 !important;
             margin-bottom: 0px !important;
             padding: 0 !important;
             line-height: 1.2 !important;
         }
 
-        /* 3. 数字・文字のサイズ（30px）→ タイトルより少し小さくする */
+        /* 3. 【重要修正】数字と文字を「40px」まで巨大化させる */
+        /* これで数字の「65」がハッキリと大きく見えます */
         [data-testid="stMetricValue"] {
-            font-size: 30px !important;
-            font-weight: bold !important;
+            font-size: 40px !important;
+            font-weight: 900 !important; /* 太字を最強にする */
+            line-height: 1.2 !important;
         }
         
-        /* 項目名（心拍数など） */
+        /* 項目名のサイズ */
         [data-testid="stMetricLabel"] {
             font-size: 14px !important;
         }
 
-        /* 4. アラートの余白を詰める */
+        /* 4. その他調整 */
         .stAlert { padding: 0.5rem !important; }
-        
-        /* 5. 区切り線の余白を最小化 */
         hr { margin: 0.5rem 0 !important; }
     </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 
-# タイトル（42pxで最大表示）
+# タイトル
 st.title("⚡ 体調と助言")
 
 # 区切り線
@@ -57,7 +57,7 @@ st.sidebar.header("▼ 入力")
 bpm = st.sidebar.slider("心拍数", 40, 180, 65)
 mood = st.sidebar.select_slider("気分", ["絶不調", "低調", "普通", "好調", "絶好調"], value="普通")
 
-# メイン表示（数字は30px）
+# メイン表示（CSSで40pxに拡大済み）
 col1, col2 = st.columns(2)
 with col1:
     st.metric("心拍数", f"{bpm}", delta=bpm-65)
@@ -88,7 +88,7 @@ else:
 
 st.info(f"**助言：** {act}")
 
-# グラフ（確実に表示させるため divider を入れて区切る）
+# グラフ
 st.divider()
 chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
