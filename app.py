@@ -35,14 +35,13 @@ st.divider()
 
 # 状況判定ロジック
 if bpm > 100:
-    st.error("🚨 警告：心拍数上昇")
+    st.error("警告：心拍数上昇")
     action = "深呼吸・休憩・水分補給をして下さい。"
 elif bpm < 50:
-    st.warning("⚠️ 注意：覚醒レベル低下")
+    st.warning("注意：覚醒レベル低下")
     action = "ストレッチや散歩をお勧めします。"
 else:
-    st.success("✅ 状態：安定")
-    # ▼▼▼ 修正箇所：体調管理として適切な言葉に変更 ▼▼▼
+    st.success("状態：安定")
     action = "安定、この状態を続けてください。"
 
 st.info(f"**助言：** {action}")
@@ -53,3 +52,4 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['BPM'])
 st.line_chart(chart_data)
+
