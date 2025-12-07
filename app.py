@@ -26,17 +26,17 @@ st.divider()
 
 # 判定ロジック
 if bpm > 100:
-    status_msg = "負荷過多。冷静さを欠く恐れあり。"
-    action = "深呼吸・休憩・水分補給を実行せよ"
+    status_msg = "負荷過多。冷静を欠く恐れがあます。"
+    action = "深呼吸・休憩・水分補給をお勧めします。"
     alert_type = "error"
 elif bpm < 50:
-    status_msg = "活動低下。集中力低下の恐れあり。"
-    action = "散歩・ストレッチ・軽い運動を実行せよ"
+    status_msg = "活動低下。集中力低下の恐れがあります。"
+    action = "散歩・ストレッチ・軽い運動をお勧めします。"
     alert_type = "warning"
 else:
-    status_msg = "安定。最適な状態。"
+    status_msg = "安定しています。"
     # 修正：余計な指示を削除し、一言で済ませる
-    action = "特に問題なし。"
+    action = "特に問題はありません。"
     alert_type = "success"
 
 # 1. 体調
@@ -58,3 +58,4 @@ chart_data = pd.DataFrame(
     np.random.randn(20, 1) * 10 + bpm,
     columns=['推移'])
 st.line_chart(chart_data, height=200)
+
