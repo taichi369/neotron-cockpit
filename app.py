@@ -49,6 +49,7 @@ st.markdown("""
 try:
     if "GEMINI_API_KEY" in st.secrets:
         genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+        # ★安定版モデル 1.5 を使用★
         model = genai.GenerativeModel('gemini-1.5-flash')
         ai_available = True
     else:
@@ -108,7 +109,8 @@ if st.button("状況を報告する (AI分析開始)"):
                 response = model.generate_content(prompt)
                 st.session_state.ai_comment = response.text
             except Exception as e:
-                st.session_state.ai_comment = "通信エラー。手動で対処せよ。"
+                # ★ここで本当のエラー原因を表示させる★
+                st.session_state.ai_comment = f"通信エラー発生。詳細：{e}"
     else:
         st.session_state.ai_comment = "APIキー未設定。AIシステム稼働不可。"
 
