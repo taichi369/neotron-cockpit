@@ -19,11 +19,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# AI初期化 (1.5 Flash)
+# AI初期化 (Gemini Pro - 安定版)
 try:
     if "GEMINI_API_KEY" in st.secrets:
         genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
         ai_available = True
     else:
         ai_available = False
@@ -67,7 +67,7 @@ if st.button("状況を報告する (AI分析開始)"):
             st.session_state.ai_comment = f"通信エラー: {e}"
     else:
         st.session_state.ai_comment = "APIキー未設定"
-
+    
     st.rerun()
 
 # グラフ
