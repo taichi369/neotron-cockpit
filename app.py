@@ -1,6 +1,22 @@
 import streamlit as st
+import os
+import sys
+import subprocess
+
+# ▼▼▼ 強制アップデート（禁じ手） ▼▼▼
+# サーバーが古い部品を使おうとするのを、力技でねじ伏せて最新版にします
+try:
+    import google.generativeai as genai
+    # バージョンが古ければ強制インストール
+    if genai.__version__ < "0.8.3":
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "google-generativeai"])
+        st.toast("システム更新完了。リロードしてください。", icon="🔄")
+except:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "google-generativeai"])
+    import google.generativeai as genai
+# ▲▲▲ ここまで ▲▲▲
+
 import pandas as pd
-import google.generativeai as genai
 from datetime import datetime
 import pytz
 
@@ -19,40 +35,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- AI初期化（自動探索システム：ここが修正ポイント）---
+# AI初期化
 connect_log = "初期化中..."
 try:
     if "GEMINI_API_KEY" in st.secrets:
         genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-        
-        # 使えるモデルを自動で探す
-        target_model = None
-        try:
-            # モデル一覧を取得
-            models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-            
-            # 優先順位: 1.5-flash -> pro -> その他何でも
-            if any('gemini-1.5-flash' in m for m in models):
-                target_model = 'gemini-1.5-flash'
-            elif any('gemini-pro' in m for m in models):
-                target_model = 'gemini-pro'
-            elif models:
-                target_model = models[0] # 何でもいいからあるやつを使う
-            
-            if target_model:
-                model = genai.GenerativeModel(target_model)
-                ai_available = True
-                connect_log = f"接続成功: {target_model}"
-            else:
-                # 一覧が取れない場合、イチかバチか gemini-pro を指定
-                model = genai.GenerativeModel('gemini-pro')
-                ai_available = True
-                connect_log = "強制接続: gemini-pro"
-        except:
-            # エラー時も強制接続を試みる
-            model = genai.GenerativeModel('gemini-pro')
-            ai_available = True
-            connect_log = "再試行接続: gemini-pro"
+        # 最新版が入ったので、堂々と最新モデルを使います
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        ai_available = True
+        connect_log = "接続成功: gemini-1.5-flash"
     else:
         ai_available = False
         connect_log = "APIキーなし"
@@ -79,8 +70,7 @@ with col2: st.metric("状態", mood_val)
 
 # AIエリア
 st.markdown('<p class="custom-label">AI参謀の助言</p>', unsafe_allow_html=True)
-# 接続状況を小さく表示（これが成功の証になります）
-st.caption(f"System Status: {connect_log}")
+st.caption(f"System: {connect_log} (v{genai.__version__})")
 st.info(f"🤖 **司令部より:**\n\n{st.session_state.ai_comment}")
 
 # ボタン処理
