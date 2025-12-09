@@ -89,20 +89,20 @@ if st.button("状況を報告する (AI分析開始)"):
     jp_time = datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%H:%M:%S')
     new_data = pd.DataFrame({'時刻': [jp_time], '心拍数': [bpm], '状態': [mood_val]})
     st.session_state.history = pd.concat([st.session_state.history, new_data], ignore_index=True)
-    
+
     # 2. AIへの指令 (プロンプト)
     if ai_available:
         prompt = f"""
         あなたはSF映画に出てくるような優秀な戦術オペレーターです。
         パイロット（ユーザー）の現在の状態は以下の通りです。
-        
+
         - 心拍数: {bpm} BPM
         - 気分: {mood_val}
-        
+
         この状態に基づき、パイロットに対して「簡潔で」「軍事的で」「的確な」アドバイスを1つだけしてください。
         敬語は不要。「〜せよ」「〜だ」という口調で、司令官のように振る舞ってください。
         """
-        
+
         with st.spinner('司令部と通信中...'):
             try:
                 response = model.generate_content(prompt)
@@ -111,7 +111,7 @@ if st.button("状況を報告する (AI分析開始)"):
                 st.session_state.ai_comment = "通信エラー。手動で対処せよ。"
     else:
         st.session_state.ai_comment = "APIキー未設定。AIシステム稼働不可。"
-    
+
     st.rerun() # 画面を更新して結果を表示
 
 # --- グラフセクション ---
@@ -120,4 +120,3 @@ st.markdown('<p class="custom-label">バイタル推移 (ログ)</p>', unsafe_al
 if not st.session_state.history.empty:
     chart_data = st.session_state.history[['心拍数']].copy()
     st.line_chart(chart_data)
-
