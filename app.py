@@ -49,7 +49,7 @@ st.markdown("""
 try:
     if "GEMINI_API_KEY" in st.secrets:
         genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         ai_available = True
     else:
         ai_available = False
@@ -120,3 +120,4 @@ st.markdown('<p class="custom-label">バイタル推移 (ログ)</p>', unsafe_al
 if not st.session_state.history.empty:
     chart_data = st.session_state.history[['心拍数']].copy()
     st.line_chart(chart_data)
+
