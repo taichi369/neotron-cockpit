@@ -26,12 +26,12 @@ try:
         genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
         
         # 使えるモデルを自動で探す
-        target_model = 'gemini-pro' # デフォルト
+        target_model = None
         try:
-            # モデル一覧を取得して、使えるものを選ぶ
+            # モデル一覧を取得
             models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
             
-            # 優先順位: 1.5-flash -> pro -> その他
+            # 優先順位: 1.5-flash -> pro -> その他何でも
             if any('gemini-1.5-flash' in m for m in models):
                 target_model = 'gemini-1.5-flash'
             elif any('gemini-pro' in m for m in models):
@@ -39,14 +39,20 @@ try:
             elif models:
                 target_model = models[0] # 何でもいいからあるやつを使う
             
-            model = genai.GenerativeModel(target_model)
-            ai_available = True
-            connect_log = f"接続成功: {target_model}"
+            if target_model:
+                model = genai.GenerativeModel(target_model)
+                ai_available = True
+                connect_log = f"接続成功: {target_model}"
+            else:
+                # 一覧が取れない場合、イチかバチか gemini-pro を指定
+                model = genai.GenerativeModel('gemini-pro')
+                ai_available = True
+                connect_log = "強制接続: gemini-pro"
         except:
-            # 一覧取得に失敗したら、イチかバチか gemini-pro を使う
+            # エラー時も強制接続を試みる
             model = genai.GenerativeModel('gemini-pro')
             ai_available = True
-            connect_log = "強制接続: gemini-pro"
+            connect_log = "再試行接続: gemini-pro"
     else:
         ai_available = False
         connect_log = "APIキーなし"
@@ -73,8 +79,8 @@ with col2: st.metric("状態", mood_val)
 
 # AIエリア
 st.markdown('<p class="custom-label">AI参謀の助言</p>', unsafe_allow_html=True)
-# 接続状況を小さく表示（デバッグ用）
-st.caption(f"System: {connect_log}")
+# 接続状況を小さく表示（これが成功の証になります）
+st.caption(f"System Status: {connect_log}")
 st.info(f"🤖 **司令部より:**\n\n{st.session_state.ai_comment}")
 
 # ボタン処理
