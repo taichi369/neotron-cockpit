@@ -19,15 +19,48 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# AI初期化 (Gemini Pro - 安定版)
+# --- AI初期化（自動探索システム）---
+model_name_log = "未接続"
 try:
     if "GEMINI_API_KEY" in st.secrets:
         genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-        model = genai.GenerativeModel('gemini-pro')
-        ai_available = True
+
+        # ★自動で使えるモデルを探すロジック★
+        found_model = None
+        try:
+            # 優先順位: Flash -> Pro -> その他
+            available_models = [m for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+
+            # 1. Flashを探す
+            for m in available_models:
+                if 'flash' in m.name:
+                    found_model = m.name
+                    break
+            # 2. なければProを探す
+            if not found_model:
+                for m in available_models:
+                    if 'pro' in m.name:
+                        found_model = m.name
+                        break
+            # 3. それでもなければ最初のやつを使う
+            if not found_model and available_models:
+                found_model = available_models[0].name
+
+            if found_model:
+                model = genai.GenerativeModel(found_model)
+                model_name_log = f"接続成功: {found_model}"
+                ai_available = True
+            else:
+                model_name_log = "有効なモデルが見つかりません"
+                ai_available = False
+        except Exception as e:
+            model_name_log = f"探索エラー: {e}"
+            ai_available = False
     else:
+        model_name_log = "APIキーが設定されていません"
         ai_available = False
-except:
+except Exception as e:
+    model_name_log = f"初期化エラー: {e}"
     ai_available = False
 
 # データ初期化
@@ -49,6 +82,8 @@ with col2: st.metric("状態", mood_val)
 
 # AIエリア
 st.markdown('<p class="custom-label">AI参謀の助言</p>', unsafe_allow_html=True)
+# デバッグ用に接続モデル名を表示（小さく）
+st.caption(f"System Status: {model_name_log}")
 st.info(f"🤖 **司令部より:**\n\n{st.session_state.ai_comment}")
 
 # ボタン処理
@@ -66,8 +101,8 @@ if st.button("状況を報告する (AI分析開始)"):
         except Exception as e:
             st.session_state.ai_comment = f"通信エラー: {e}"
     else:
-        st.session_state.ai_comment = "APIキー未設定"
-    
+        st.session_state.ai_comment = f"AIシステム停止中 ({model_name_log})"
+
     st.rerun()
 
 # グラフ
