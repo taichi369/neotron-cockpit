@@ -19,49 +19,40 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- AI初期化（自動探索システム）---
-model_name_log = "未接続"
+# --- AI初期化（自動探索システム：ここが修正ポイント）---
+connect_log = "初期化中..."
 try:
     if "GEMINI_API_KEY" in st.secrets:
         genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
-        # ★自動で使えるモデルを探すロジック★
-        found_model = None
+        
+        # 使えるモデルを自動で探す
+        target_model = 'gemini-pro' # デフォルト
         try:
-            # 優先順位: Flash -> Pro -> その他
-            available_models = [m for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-
-            # 1. Flashを探す
-            for m in available_models:
-                if 'flash' in m.name:
-                    found_model = m.name
-                    break
-            # 2. なければProを探す
-            if not found_model:
-                for m in available_models:
-                    if 'pro' in m.name:
-                        found_model = m.name
-                        break
-            # 3. それでもなければ最初のやつを使う
-            if not found_model and available_models:
-                found_model = available_models[0].name
-
-            if found_model:
-                model = genai.GenerativeModel(found_model)
-                model_name_log = f"接続成功: {found_model}"
-                ai_available = True
-            else:
-                model_name_log = "有効なモデルが見つかりません"
-                ai_available = False
-        except Exception as e:
-            model_name_log = f"探索エラー: {e}"
-            ai_available = False
+            # モデル一覧を取得して、使えるものを選ぶ
+            models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+            
+            # 優先順位: 1.5-flash -> pro -> その他
+            if any('gemini-1.5-flash' in m for m in models):
+                target_model = 'gemini-1.5-flash'
+            elif any('gemini-pro' in m for m in models):
+                target_model = 'gemini-pro'
+            elif models:
+                target_model = models[0] # 何でもいいからあるやつを使う
+            
+            model = genai.GenerativeModel(target_model)
+            ai_available = True
+            connect_log = f"接続成功: {target_model}"
+        except:
+            # 一覧取得に失敗したら、イチかバチか gemini-pro を使う
+            model = genai.GenerativeModel('gemini-pro')
+            ai_available = True
+            connect_log = "強制接続: gemini-pro"
     else:
-        model_name_log = "APIキーが設定されていません"
         ai_available = False
+        connect_log = "APIキーなし"
 except Exception as e:
-    model_name_log = f"初期化エラー: {e}"
     ai_available = False
+    connect_log = f"エラー: {e}"
 
 # データ初期化
 if 'history' not in st.session_state:
@@ -82,8 +73,8 @@ with col2: st.metric("状態", mood_val)
 
 # AIエリア
 st.markdown('<p class="custom-label">AI参謀の助言</p>', unsafe_allow_html=True)
-# デバッグ用に接続モデル名を表示（小さく）
-st.caption(f"System Status: {model_name_log}")
+# 接続状況を小さく表示（デバッグ用）
+st.caption(f"System: {connect_log}")
 st.info(f"🤖 **司令部より:**\n\n{st.session_state.ai_comment}")
 
 # ボタン処理
@@ -101,8 +92,8 @@ if st.button("状況を報告する (AI分析開始)"):
         except Exception as e:
             st.session_state.ai_comment = f"通信エラー: {e}"
     else:
-        st.session_state.ai_comment = f"AIシステム停止中 ({model_name_log})"
-
+        st.session_state.ai_comment = f"システム停止中: {connect_log}"
+    
     st.rerun()
 
 # グラフ
